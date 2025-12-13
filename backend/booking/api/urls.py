@@ -1,9 +1,9 @@
-from django.urls import path
+# booking/api/urls.py
 from rest_framework.routers import DefaultRouter
 
-from .views import BookingViewSet
+from .views import FlightViewSet
 
-booking_router = DefaultRouter()
-booking_router.register(r"bookings", BookingViewSet, basename="booking")
+router = DefaultRouter()
+router.register(r"flights", FlightViewSet, basename="flight")
 
-urlpatterns = booking_router.urls
+urlpatterns = router.urls

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: airline_booking_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/code
+      - ./backend/db.sqlite3:/code/db.sqlite3
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_SETTINGS_MODULE=airline_booking.settings
+    command: python manage.py runserver 0.0.0.0:8000
+    stdin_open: true
+    tty: true
+
+  frontend:
+    build: ./frontend
+    container_name: airline_booking_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: npm run dev
+    depends_on:
+      - backend
