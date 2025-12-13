@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import FlightList from './components/FlightList/FlightList'
 
 function App() {
 
@@ -9,7 +10,10 @@ function App() {
   
   return (
     <>
-      
+      <div>
+        <h1>Airplane Tickets Booking</h1>
+        <FlightList />
+      </div>
     </>
   )
 }

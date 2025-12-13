@@ -1,9 +1,12 @@
+# booking/api/views.py
+from booking.models import Flight
 from rest_framework.viewsets import ModelViewSet
 
-from ..models import Booking
-from .serializers import BookingSerializer
+from .serializers import FlightSerializer
 
 
-class BookingViewSet(ModelViewSet):
-    queryset = Booking.objects.all()
-    serializer_class = BookingSerializer
+class FlightViewSet(ModelViewSet):
+    queryset = Flight.objects.all()
+    serializer_class = FlightSerializer
+    queryset = Flight.objects.all()
+    serializer_class = FlightSerializer
