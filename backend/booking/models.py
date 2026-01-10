@@ -9,6 +9,17 @@ class Airport(models.Model):
     city = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
 
+    def __str__(self):
+        return f"{self.name} ({self.code})"
+
+
+class Airline(models.Model):
+    name = models.CharField(max_length=100)
+    logo = models.ImageField(upload_to="airline_logos/", blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Airplane(models.Model):
     model = models.CharField(max_length=50)
@@ -24,6 +35,9 @@ class Seat(models.Model):
 
 class Flight(models.Model):
     flight_number = models.CharField(max_length=10)
+    airline = models.ForeignKey(
+        Airline, on_delete=models.CASCADE, null=True, blank=True
+    )
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE)
     origin = models.ForeignKey(
         Airport, related_name="departures", on_delete=models.CASCADE
@@ -33,6 +47,9 @@ class Flight(models.Model):
     )
     departure_time = models.DateTimeField()
     arrival_time = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.flight_number} - {self.origin.code} to {self.destination.code}"
 
 
 class Reservation(models.Model):

@@ -82,11 +82,29 @@ const FlightDetail = () => {
       {/* Flight Header Card */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl p-8 mb-6 text-white shadow-md">
         <div className="flex items-start justify-between flex-wrap gap-4">
-          <div>
-            <div className="text-blue-100 text-xs uppercase tracking-wide mb-2">Flight</div>
-            <h1 className="font-heading text-4xl font-semibold mb-6">
-              {flight.flight_number}
-            </h1>
+          <div className="flex-1">
+            <div className="flex items-center gap-4 mb-6">
+              {flight.airline_logo && (
+                <img 
+                  src={flight.airline_logo} 
+                  alt={flight.airline_name || 'Airline'}
+                  className="w-16 h-16 object-contain rounded-xl bg-white p-2 shadow-md"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                  }}
+                />
+              )}
+              <div>
+                {flight.airline_name && (
+                  <div className="text-blue-100 text-xs uppercase tracking-wide mb-1">
+                    {flight.airline_name}
+                  </div>
+                )}
+                <h1 className="font-heading text-4xl font-semibold">
+                  {flight.flight_number}
+                </h1>
+              </div>
+            </div>
             <div className="flex items-center gap-4 text-lg">
               <div>
                 <div className="font-semibold text-xl">{flight.origin_code}</div>

@@ -101,15 +101,31 @@ const FlightList = () => {
                   {/* Flight Number */}
                   <td className="px-6 py-5">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
-                        <svg className="w-5 h-5 text-[#1a73e8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                        </svg>
-                      </div>
+                      {flight.airline_logo ? (
+                        <img 
+                          src={flight.airline_logo} 
+                          alt={flight.airline_name || 'Airline'}
+                          className="w-10 h-10 object-contain rounded-lg bg-white border border-gray-100 p-1"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
+                          <svg className="w-5 h-5 text-[#1a73e8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          </svg>
+                        </div>
+                      )}
                       <div>
                         <div className="text-[14px] font-semibold text-[#202124]">
                           {flight.flight_number}
                         </div>
+                        {flight.airline_name && (
+                          <div className="text-[12px] text-[#5f6368]">
+                            {flight.airline_name}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </td>
