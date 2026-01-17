@@ -1,0 +1,251 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
+const RecentlyViewed = () => {
+  const [recentFlights, setRecentFlights] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRecentlyViewed = () => {
+    fetch(`${import.meta.env.VITE_API_URL}/recently-viewed/`, {
+      credentials: 'include'
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log('Recently viewed data:', data);
+        setRecentFlights(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching recent flights:", error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchRecentlyViewed();
+  }, []);
+
+  const handleRemoveFromRecent = (flightId) => {
+    fetch(`${import.meta.env.VITE_API_URL}/recently-viewed/${flightId}/`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+      .then(() => {
+        setRecentFlights(prev => prev.filter(f => f.id !== flightId));
+      })
+      .catch((error) => {
+        console.error("Error removing flight:", error);
+      });
+  };
+
+  const handleClearAll = () => {
+    fetch(`${import.meta.env.VITE_API_URL}/recently-viewed/`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+      .then(() => {
+        setRecentFlights([]);
+      })
+      .catch((error) => {
+        console.error("Error clearing recent flights:", error);
+      });
+  };
+
+  if (loading) {
+    return (
+      <div className="px-6 py-12">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-[#5f6368] text-sm">Loading recently viewed flights...</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="px-6 py-8 max-w-[1400px] mx-auto">
+      {/* Header Section */}
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="font-heading text-3xl font-semibold text-[#202124] mb-2">
+            Recently Viewed Flights
+          </h1>
+          <p className="text-[#5f6368] text-sm">
+            {recentFlights.length > 0 
+              ? `Your last ${recentFlights.length} viewed flight${recentFlights.length !== 1 ? 's' : ''}`
+              : 'View flight details to see them here'}
+          </p>
+        </div>
+        {recentFlights.length > 0 && (
+          <button 
+            onClick={handleClearAll}
+            className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 border border-red-200 rounded-lg font-medium transition-colors"
+          >
+            Clear All History
+          </button>
+        )}
+      </div>
+
+      {/* Recently Viewed Flights */}
+      {recentFlights.length > 0 ? (
+        <div className="bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-[#e8eaed] shadow-sm overflow-hidden">
+          <table className="font-sans w-full">
+            <thead className="bg-white border-b border-[#e8eaed]">
+              <tr>
+                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                  Flight
+                </th>
+                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                  Route
+                </th>
+                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                  Aircraft
+                </th>
+                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                  Schedule
+                </th>
+                <th className="text-right px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentFlights.map((flight) => (
+                <tr
+                  key={flight.id}
+                  className="border-b border-[#f1f3f4] last:border-b-0 hover:bg-white/50 transition-colors"
+                >
+                  {/* Flight Number */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      {flight.airline_logo ? (
+                        <img 
+                          src={flight.airline_logo} 
+                          alt={flight.airline_name || 'Airline'}
+                          className="w-10 h-10 object-contain rounded-lg bg-white border border-gray-100 p-1"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
+                          <svg className="w-5 h-5 text-[#1a73e8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                          </svg>
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-[14px] font-semibold text-[#202124]">
+                          {flight.flight_number}
+                        </div>
+                        {flight.airline_name && (
+                          <div className="text-[12px] text-[#5f6368]">
+                            {flight.airline_name}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Route */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div>
+                        <div className="text-[13px] font-medium text-[#202124]">
+                          {flight.origin_code}
+                        </div>
+                        <div className="text-[12px] text-[#5f6368]">
+                          {flight.origin_name}
+                        </div>
+                      </div>
+                      <svg className="w-4 h-4 text-[#5f6368] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                      </svg>
+                      <div>
+                        <div className="text-[13px] font-medium text-[#202124]">
+                          {flight.destination_code}
+                        </div>
+                        <div className="text-[12px] text-[#5f6368]">
+                          {flight.destination_name}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Aircraft */}
+                  <td className="px-6 py-4">
+                    <div className="text-[13px] text-[#202124]">
+                      {flight.airplane_name}
+                    </div>
+                  </td>
+
+                  {/* Schedule */}
+                  <td className="px-6 py-4">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Dep</span>
+                        <span className="text-[13px] text-[#202124] font-medium">
+                          {flight.departure_time}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Arr</span>
+                        <span className="text-[13px] text-[#202124] font-medium">
+                          {flight.arrival_time}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Link 
+                        to={`/flight/${flight.id}`}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors text-[13px] font-medium shadow-sm"
+                      >
+                        View Details
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                      <button
+                        onClick={() => handleRemoveFromRecent(flight.id)}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
+                        title="Remove from recently viewed"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div className="bg-white rounded-2xl border border-[#e8eaed] shadow-sm p-16 text-center">
+          <svg className="w-20 h-20 text-[#dadce0] mx-auto mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h3 className="text-xl font-semibold text-[#5f6368] mb-3">No Recently Viewed Flights</h3>
+          <p className="text-[#5f6368] mb-6 max-w-md mx-auto">
+            Browse available flights and click "View Details" to start tracking your viewing history
+          </p>
+          <Link 
+            to="/"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors font-medium shadow-sm"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            Browse All Flights
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default RecentlyViewed;

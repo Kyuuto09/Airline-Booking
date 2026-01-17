@@ -26,11 +26,17 @@ class Airplane(models.Model):
     rows = models.IntegerField()
     columns = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.model} ({self.rows}x{self.columns})"
+
 
 class Seat(models.Model):
     airplane = models.ForeignKey(Airplane, on_delete=models.CASCADE)
     row = models.IntegerField()
     column = models.CharField(max_length=1)
+
+    def __str__(self):
+        return f"{self.airplane.model} - Seat {self.row}{self.column}"
 
 
 class Flight(models.Model):
@@ -65,3 +71,6 @@ class Reservation(models.Model):
         ],
     )
     expires_at = models.DateTimeField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.flight.flight_number} - {self.seat}"

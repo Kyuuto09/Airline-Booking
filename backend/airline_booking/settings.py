@@ -47,6 +47,14 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
+# Allow credentials (cookies, sessions) to be sent with CORS requests
+CORS_ALLOW_CREDENTIALS = True
+
+# Session configuration for cross-origin
+SESSION_COOKIE_SAMESITE = "Lax"
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",

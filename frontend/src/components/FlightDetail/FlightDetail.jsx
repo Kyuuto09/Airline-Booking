@@ -8,14 +8,19 @@ const FlightDetail = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/flights/${id}/`)
+    console.log('Fetching flight details for ID:', id);
+    fetch(`${import.meta.env.VITE_API_URL}/flights/${id}/`, {
+      credentials: 'include'  // Important: send session cookies
+    })
       .then((response) => {
+        console.log('Flight detail response status:', response.status);
         if (!response.ok) {
           throw new Error("Failed to fetch flight details");
         }
         return response.json();
       })
       .then((data) => {
+        console.log('Flight detail received:', data.flight_number);
         setFlight(data);
         setLoading(false);
       })

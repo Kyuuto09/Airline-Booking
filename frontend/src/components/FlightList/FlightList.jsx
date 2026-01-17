@@ -7,6 +7,7 @@ const FlightList = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Fetch all flights
     fetch(`${import.meta.env.VITE_API_URL}/flights/`)
       .then((response) => {
         if (!response.ok) {
