@@ -165,18 +165,28 @@ const FlightList = () => {
 
                   {/* Schedule */}
                   <td className="px-6 py-5">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Dep</span>
-                        <span className="text-[13px] text-[#202124] font-medium">
-                          {flight.departure_time}
-                        </span>
+                    <div className="space-y-2">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide font-medium w-8">DEP</span>
+                        <div className="flex flex-col">
+                          <span className="text-[13px] text-[#202124] font-medium">
+                            {new Date(flight.departure_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                          <span className="text-[12px] text-[#5f6368]">
+                            {new Date(flight.departure_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Arr</span>
-                        <span className="text-[13px] text-[#202124] font-medium">
-                          {flight.arrival_time}
-                        </span>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide font-medium w-8">ARR</span>
+                        <div className="flex flex-col">
+                          <span className="text-[13px] text-[#202124] font-medium">
+                            {new Date(flight.arrival_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                          <span className="text-[12px] text-[#5f6368]">
+                            {new Date(flight.arrival_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </td>
@@ -185,7 +195,7 @@ const FlightList = () => {
                   <td className="px-6 py-5 text-right">
                     <Link 
                       to={`/flight/${flight.id}`}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors text-[13px] font-medium shadow-sm"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors text-[13px] font-medium shadow-sm hover:shadow-md whitespace-nowrap"
                     >
                       View Details
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
