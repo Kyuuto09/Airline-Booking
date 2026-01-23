@@ -1,4 +1,19 @@
-# 🛫 Airplane Ticket Booking System — Development Plan
+<div align="center">
+
+<img src="frontend/public/favicon.svg" alt="SkyBook Logo" width="120" height="120"/>
+
+# SkyBook
+
+### *Your Gateway to Seamless Flight Booking*
+
+[![Azure Deployment](https://img.shields.io/badge/Azure-Deployed-0078D4?logo=microsoft-azure)](https://airline-booking-api.azurewebsites.net)
+[![Django](https://img.shields.io/badge/Django-6.0-092E20?logo=django)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react)](https://react.dev/)
+[![Python](https://img.shields.io/badge/Python-3.14-3776AB?logo=python)](https://www.python.org/)
+
+---
+
+</div>
 
 ## 🎯 Project Goal
 A system to browse flights, select seats, and reserve tickets, including airports and destinations, with seat availability and expiration logic, but without payments.
