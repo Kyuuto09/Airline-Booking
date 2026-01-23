@@ -63,7 +63,7 @@ SESSION_COOKIE_SAMESITE = "None"  # Required for cross-origin cookies
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SECURE = True  # Required when SameSite=None
 SESSION_COOKIE_DOMAIN = None  # Allow any domain
-SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Store in database
+SESSION_ENGINE = "django.contrib.sessions.backends.db"  # Store in database
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -153,3 +153,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Media files (uploads like airline logos)
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "photos"
