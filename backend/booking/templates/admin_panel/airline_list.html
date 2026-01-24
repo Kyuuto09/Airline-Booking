@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin – Flights</title>
+    <title>Admin – Airlines</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -96,10 +96,10 @@
     <nav class="bg-white border-b border-[#e8eaed]">
         <div class="max-w-[1400px] mx-auto px-6">
             <div class="flex h-16 space-x-8">
-                <a href="{% url 'admin_flight_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-[#202124]">
+                <a href="{% url 'admin_flight_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
                     Flights
                 </a>
-                <a href="{% url 'admin_airline_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
+                <a href="{% url 'admin_airline_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-[#202124]">
                     Airlines
                 </a>
             </div>
@@ -107,35 +107,31 @@
     </nav>
 
     <div class="px-6 py-8 max-w-[1400px] mx-auto">
-
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-8">
             <div>
                 <h1 class="text-3xl font-semibold text-[#202124] mb-2">
-                    Flights Admin
+                    Airlines Admin
                 </h1>
                 <p class="text-[#5f6368] text-sm">
-                    Manage your flight inventory
+                    Manage your airline partners
                 </p>
             </div>
-            <a href="{% url 'admin_flight_create' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                Create Flight
+            <a href="{% url 'admin_airline_create' %}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Create Airline
             </a>
         </div>
 
-        <!-- Flights Table -->
+        <!-- Airlines Table -->
         <div class="bg-white rounded-2xl border border-[#e8eaed] shadow-sm overflow-hidden">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr class="border-b border-[#e8eaed]">
                         <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Flight Number
+                            Airline Name
                         </th>
                         <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Departure
-                        </th>
-                        <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Arrival
+                            Logo
                         </th>
                         <th class="text-right px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                             Action
@@ -143,30 +139,31 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for flight in flights %}
+                    {% for airline in airlines %}
                         <tr class="border-b border-[#f1f3f4] last:border-b-0 hover:bg-[#f8f9fa] transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-[#202124]">
-                                {{ flight.flight_number }}
+                                {{ airline.name }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[#5f6368]">
-                                {{ flight.departure_time }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#5f6368]">
-                                {{ flight.arrival_time }}
+                                {% if airline.logo %}
+                                    <img src="{{ airline.logo.url }}" alt="{{ airline.name }}" class="h-8 max-w-[100px] object-contain">
+                                {% else %}
+                                    <span class="text-gray-400">No logo</span>
+                                {% endif %}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                <a href="{% url 'admin_flight_update' flight.id %}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
-                                <a href="{% url 'admin_flight_delete' flight.id %}" onclick="return confirm('Are you sure you want to delete flight {{ flight.flight_number }}?')" class="text-red-600 hover:text-red-900">Delete</a>
+                                <a href="{% url 'admin_airline_update' airline.id %}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
+                                <a href="{% url 'admin_airline_delete' airline.id %}" onclick="return confirm('Are you sure you want to delete airline {{ airline.name }}?')" class="text-red-600 hover:text-red-900">Delete</a>
                             </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colSpan="4" class="text-center px-6 py-20">
+                            <td colSpan="3" class="text-center px-6 py-20">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-12 h-12 text-[#dadce0] mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                     </svg>
-                                    <div class="text-[#5f6368] text-sm">No flights available</div>
+                                    <div class="text-[#5f6368] text-sm">No airlines available</div>
                                 </div>
                             </td>
                         </tr>

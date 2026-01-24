@@ -5,10 +5,23 @@ const FlightList = () => {
   const [flights, setFlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filters, setFilters] = useState({
+    origin: '',
+    destination: ''
+  });
 
-  useEffect(() => {
-    // Fetch all flights
-    fetch(`${import.meta.env.VITE_API_URL}/flights/`)
+  const fetchFlights = (searchParams = {}) => {
+    setLoading(true);
+    let url = `${import.meta.env.VITE_API_URL}/flights/?`;
+    const params = new URLSearchParams();
+    
+    // Strict filtering: 'origin' input only filters by origin city/code
+    if (searchParams.origin) params.append('origin', searchParams.origin);
+    
+    // Strict filtering: 'destination' input only filters by destination city/code
+    if (searchParams.destination) params.append('destination', searchParams.destination);
+    
+    fetch(url + params.toString())
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to fetch flights');
@@ -24,17 +37,16 @@ const FlightList = () => {
         setError(error.message);
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    fetchFlights();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="px-6 py-12">
-        <div className="flex items-center justify-center py-20">
-          <div className="text-[#5f6368] text-sm">Loading available flights...</div>
-        </div>
-      </div>
-    );
-  }
+  const handleSearch = (e) => {
+    e.preventDefault();
+    fetchFlights(filters);
+  };
 
   if (error) {
     return (
@@ -59,6 +71,77 @@ const FlightList = () => {
         </p>
       </div>
 
+      {/* Search & Filter Bar */}
+      <div className="bg-white rounded-2xl p-6 mb-8 shadow-[0_2px_12px_rgba(0,0,0,0.08)] border border-gray-100 relative z-10">
+        <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+          
+          {/* From Input */}
+          <div className="md:col-span-5 relative group">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
+              From
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                 <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                 </svg>
+              </div>
+              <input
+                type="text"
+                placeholder="City or Airport"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                value={filters.origin}
+                onChange={(e) => setFilters({...filters, origin: e.target.value})}
+              />
+            </div>
+          </div>
+
+          {/* To Input */}
+          <div className="md:col-span-5 relative group">
+            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5 ml-1">
+              To
+            </label>
+            <div className="relative">
+               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                 <svg className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                 </svg>
+               </div>
+              <input
+                type="text"
+                placeholder="City or Airport"
+                className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all placeholder:text-gray-400"
+                value={filters.destination}
+                onChange={(e) => setFilters({...filters, destination: e.target.value})}
+              />
+            </div>
+          </div>
+
+          {/* Search Button */}
+          <div className="md:col-span-2">
+            <button 
+              type="submit"
+              className="w-full py-3 bg-[#1a73e8] hover:bg-[#1765cc] text-white font-bold rounded-xl shadow-lg shadow-blue-200 hover:shadow-xl hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {loading ? (
+      <div className="px-6 py-12">
+        <div className="flex items-center justify-center py-20">
+          <div className="text-[#5f6368] text-sm animate-pulse">Loading available flights...</div>
+        </div>
+      </div>
+      ) : (
+      <>
       {/* Flights Table */}
       <div className="bg-white rounded-2xl border border-[#e8eaed] shadow-sm overflow-hidden">
         <table className="font-sans w-full">
@@ -133,24 +216,28 @@ const FlightList = () => {
 
                   {/* Route */}
                   <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <div className="text-[13px] font-medium text-[#202124]">
+                    <div className="flex items-center gap-6">
+                      <div className="text-right flex-1 min-w-[120px]">
+                        <div className="text-[15px] font-bold text-[#202124] leading-tight mb-0.5">
+                          {flight.origin_city}
+                        </div>
+                        <div className="text-[12px] font-medium text-[#5f6368] bg-gray-100 inline-block px-1.5 rounded">
                           {flight.origin_code}
                         </div>
-                        <div className="text-[12px] text-[#5f6368]">
-                          {flight.origin_name}
+                      </div>
+                      
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-[1px] bg-[#dadce0] relative">
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 border-t border-r border-[#dadce0] rotate-45"></div>
                         </div>
                       </div>
-                      <svg className="w-4 h-4 text-[#5f6368] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                      <div>
-                        <div className="text-[13px] font-medium text-[#202124]">
-                          {flight.destination_code}
+
+                      <div className="text-left flex-1 min-w-[120px]">
+                        <div className="text-[15px] font-bold text-[#202124] leading-tight mb-0.5">
+                          {flight.destination_city}
                         </div>
-                        <div className="text-[12px] text-[#5f6368]">
-                          {flight.destination_name}
+                        <div className="text-[12px] font-medium text-[#5f6368] bg-gray-100 inline-block px-1.5 rounded">
+                          {flight.destination_code}
                         </div>
                       </div>
                     </div>
@@ -158,35 +245,21 @@ const FlightList = () => {
 
                   {/* Aircraft */}
                   <td className="px-6 py-5">
-                    <div className="text-[13px] text-[#202124]">
+                    <div className="text-[13px] font-medium text-[#202124] bg-blue-50 text-blue-700 px-2 py-1 rounded inline-block">
                       {flight.airplane_name}
                     </div>
                   </td>
 
                   {/* Schedule */}
                   <td className="px-6 py-5">
-                    <div className="space-y-2">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide font-medium w-8">DEP</span>
-                        <div className="flex flex-col">
-                          <span className="text-[13px] text-[#202124] font-medium">
-                            {new Date(flight.departure_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                          <span className="text-[12px] text-[#5f6368]">
-                            {new Date(flight.departure_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[15px] font-semibold text-[#202124]">
+                        {new Date(flight.departure_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        <span className="mx-2 text-gray-300">→</span>
+                        {new Date(flight.arrival_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </div>
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide font-medium w-8">ARR</span>
-                        <div className="flex flex-col">
-                          <span className="text-[13px] text-[#202124] font-medium">
-                            {new Date(flight.arrival_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </span>
-                          <span className="text-[12px] text-[#5f6368]">
-                            {new Date(flight.arrival_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                          </span>
-                        </div>
+                      <div className="text-[12px] text-[#5f6368] font-medium">
+                        {new Date(flight.departure_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                     </div>
                   </td>
@@ -209,6 +282,8 @@ const FlightList = () => {
           </tbody>
         </table>
       </div>
+      </>
+      )}
     </div>
   );
 };

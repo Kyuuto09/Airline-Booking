@@ -1,5 +1,22 @@
 from booking.models import Airline, Airplane, Airport, Flight, Reservation, Seat
+from django.contrib.auth.models import User
 from rest_framework import serializers
+
+
+class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "password"]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            username=validated_data["username"],
+            email=validated_data.get("email", ""),
+            password=validated_data["password"],
+        )
+        return user
 
 
 class AirportSerializer(serializers.ModelSerializer):
@@ -33,13 +50,16 @@ class AirlineSerializer(serializers.ModelSerializer):
 class FlightSerializer(serializers.ModelSerializer):
     origin_name = serializers.CharField(source="origin.name", read_only=True)
     origin_code = serializers.CharField(source="origin.code", read_only=True)
+    origin_city = serializers.CharField(source="origin.city", read_only=True)
     destination_name = serializers.CharField(source="destination.name", read_only=True)
     destination_code = serializers.CharField(source="destination.code", read_only=True)
+    destination_city = serializers.CharField(source="destination.city", read_only=True)
     airplane_name = serializers.CharField(source="airplane.model", read_only=True)
     airline_name = serializers.CharField(source="airline.name", read_only=True)
     airline_logo = serializers.SerializerMethodField()
     departure_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
     arrival_time = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    price = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
 
     class Meta:
         model = Flight
@@ -52,13 +72,16 @@ class FlightSerializer(serializers.ModelSerializer):
             "origin",
             "origin_name",
             "origin_code",
+            "origin_city",
             "destination",
             "destination_name",
             "destination_code",
+            "destination_city",
             "airplane",
             "airplane_name",
             "departure_time",
             "arrival_time",
+            "price",
         ]
 
     def get_airline_logo(self, obj):

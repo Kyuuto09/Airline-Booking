@@ -148,24 +148,28 @@ const RecentlyViewed = () => {
 
                   {/* Route */}
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div>
-                        <div className="text-[13px] font-medium text-[#202124]">
+                    <div className="flex items-center gap-6">
+                      <div className="text-right flex-1 min-w-[120px]">
+                        <div className="text-[15px] font-bold text-[#202124] leading-tight mb-0.5">
+                          {flight.origin_city}
+                        </div>
+                        <div className="text-[12px] font-medium text-[#5f6368] bg-white border border-gray-100 inline-block px-1.5 rounded shadow-sm">
                           {flight.origin_code}
                         </div>
-                        <div className="text-[12px] text-[#5f6368]">
-                          {flight.origin_name}
+                      </div>
+                      
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="w-16 h-[1px] bg-[#dadce0] relative">
+                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-1.5 h-1.5 border-t border-r border-[#dadce0] rotate-45"></div>
                         </div>
                       </div>
-                      <svg className="w-4 h-4 text-[#5f6368] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                      <div>
-                        <div className="text-[13px] font-medium text-[#202124]">
-                          {flight.destination_code}
+
+                      <div className="text-left flex-1 min-w-[120px]">
+                        <div className="text-[15px] font-bold text-[#202124] leading-tight mb-0.5">
+                          {flight.destination_city}
                         </div>
-                        <div className="text-[12px] text-[#5f6368]">
-                          {flight.destination_name}
+                        <div className="text-[12px] font-medium text-[#5f6368] bg-white border border-gray-100 inline-block px-1.5 rounded shadow-sm">
+                          {flight.destination_code}
                         </div>
                       </div>
                     </div>
@@ -173,25 +177,21 @@ const RecentlyViewed = () => {
 
                   {/* Aircraft */}
                   <td className="px-6 py-4">
-                    <div className="text-[13px] text-[#202124]">
+                    <div className="text-[13px] font-medium text-[#202124] bg-blue-50 text-blue-700 px-2 py-1 rounded inline-block">
                       {flight.airplane_name}
                     </div>
                   </td>
 
                   {/* Schedule */}
                   <td className="px-6 py-4">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Dep</span>
-                        <span className="text-[13px] text-[#202124] font-medium">
-                          {flight.departure_time}
-                        </span>
+                    <div className="flex flex-col gap-1">
+                      <div className="text-[15px] font-semibold text-[#202124]">
+                        {new Date(flight.departure_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                        <span className="mx-2 text-gray-300">→</span>
+                        {new Date(flight.arrival_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] text-[#5f6368] uppercase tracking-wide">Arr</span>
-                        <span className="text-[13px] text-[#202124] font-medium">
-                          {flight.arrival_time}
-                        </span>
+                      <div className="text-[12px] text-[#5f6368] font-medium">
+                        {new Date(flight.departure_time).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </div>
                     </div>
                   </td>

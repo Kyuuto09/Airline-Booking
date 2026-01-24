@@ -38,4 +38,21 @@ urlpatterns = [
         admin_views.flight_delete,
         name="admin_flight_delete",
     ),
+    # Airline Admin URLs
+    path("custom-admin/airlines/", admin_views.airline_list, name="admin_airline_list"),
+    path(
+        "custom-admin/airlines/create/",
+        admin_views.airline_create,
+        name="admin_airline_create",
+    ),
+    path(
+        "custom-admin/airlines/<int:id>/edit/",
+        admin_views.airline_update,
+        name="admin_airline_update",
+    ),
+    path(
+        "custom-admin/airlines/<int:id>/delete/",
+        admin_views.airline_delete,
+        name="admin_airline_delete",
+    ),
 ]

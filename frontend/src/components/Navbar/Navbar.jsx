@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import AuthContext from '../../context/AuthContext';
 
 const Navbar = () => {
+  const { user, logoutUser } = useContext(AuthContext);
   const [recentCount, setRecentCount] = useState(0);
   const location = useLocation();
 
@@ -12,12 +14,14 @@ const Navbar = () => {
     })
       .then((response) => response.json())
       .then((data) => {
-        setRecentCount(data.length);
+        if (Array.isArray(data)) {
+            setRecentCount(data.length);
+        }
       })
       .catch((error) => {
-        console.error("Error fetching recent count:", error);
+        // Silent error
       });
-  }, [location.pathname]); // Re-fetch when route changes
+  }, [location.pathname]); 
 
   const isActive = (path) => {
     return location.pathname === path;
@@ -82,6 +86,41 @@ const Navbar = () => {
                 )}
               </div>
             </Link>
+            
+            <div className="w-px h-6 bg-gray-200 mx-2"></div>
+            
+            {/* Auth Section */}
+            {user ? (
+               <div className="flex items-center gap-2 pl-2">
+                  <div className="flex items-center gap-3 mr-2 px-3 py-1.5 rounded-lg border border-transparent hover:border-gray-100 hover:bg-gray-50 transition-all cursor-default">
+                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700 font-bold text-sm shadow-sm ring-2 ring-white">
+                        {user.username.charAt(0).toUpperCase()}
+                     </div>
+                     <span className="hidden sm:block text-sm font-medium text-gray-700">{user.username}</span>
+                  </div>
+                  <button 
+                     onClick={logoutUser}
+                     className="px-4 py-2 rounded-lg text-[14px] font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-all"
+                  >
+                     Log out
+                  </button>
+               </div>
+            ) : (
+               <div className="flex items-center gap-2 pl-2">
+                  <Link 
+                     to="/login"
+                     className="px-4 py-2 rounded-lg text-[14px] font-medium text-[#5f6368] hover:bg-[#f8f9fa] hover:text-[#202124] transition-all"
+                  >
+                     Log in
+                  </Link>
+                  <Link 
+                     to="/register"
+                     className="px-4 py-2 rounded-lg text-[14px] font-medium bg-[#1a73e8] text-white shadow-md shadow-blue-100 hover:bg-[#1765cc] hover:shadow-lg transition-all"
+                  >
+                     Register
+                  </Link>
+               </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,11 @@
 # booking/api/views.py
 from booking.models import Airline, Airplane, Airport, Flight
+from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework.decorators import api_view
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.generics import CreateAPIView
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -9,7 +14,14 @@ from .serializers import (
     AirplaneSerializer,
     AirportSerializer,
     FlightSerializer,
+    UserSerializer,
 )
+
+
+class RegisterView(CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
 
 
 class AirportViewSet(ModelViewSet):
@@ -32,6 +44,27 @@ class FlightViewSet(ModelViewSet):
         "airline", "airplane", "origin", "destination"
     ).all()
     serializer_class = FlightSerializer
+    filter_backends = [OrderingFilter]
+    ordering_fields = ["departure_time"]
+    ordering = ["departure_time"]
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        origin = self.request.query_params.get("origin", None)
+        destination = self.request.query_params.get("destination", None)
+
+        if origin:
+            queryset = queryset.filter(
+                Q(origin__city__icontains=origin) | Q(origin__code__icontains=origin)
+            )
+
+        if destination:
+            queryset = queryset.filter(
+                Q(destination__city__icontains=destination)
+                | Q(destination__code__icontains=destination)
+            )
+
+        return queryset
 
     def retrieve(self, request, *args, **kwargs):
         # Get the flight
