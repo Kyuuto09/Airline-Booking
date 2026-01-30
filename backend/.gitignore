@@ -15,6 +15,11 @@ ENV/
 db.sqlite3
 db.sqlite3-journal
 /staticfiles/
+/media/
+/photos/
+
+# Environment variables
+.env
 
 # IDE
 .vscode/

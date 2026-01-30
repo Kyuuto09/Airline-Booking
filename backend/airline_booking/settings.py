@@ -146,18 +146,29 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Media files (User uploads)
-MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Media files (uploads like airline logos)
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "photos"
+# ---- Azure Blob Storage Configuration ----
+# Check if Azure credentials are provided
+if os.getenv("AZURE_ACCOUNT_NAME") and os.getenv("AZURE_ACCOUNT_KEY"):
+    # Use Azure Blob Storage for media files
+    DEFAULT_FILE_STORAGE = "custom_storage.AzureMediaStorage"
+
+    AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
+    AZURE_ACCOUNT_KEY = os.getenv("AZURE_ACCOUNT_KEY")
+    AZURE_CUSTOM_DOMAIN = f"{AZURE_ACCOUNT_NAME}.blob.core.windows.net"
+
+    MEDIA_URL = f"https://{AZURE_CUSTOM_DOMAIN}/media/"
+    print(f"✅ Using Azure Blob Storage: {MEDIA_URL}")
+else:
+    # Fallback to local storage for development
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    print("⚠️ Using Local File Storage")
+
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

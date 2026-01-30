@@ -26,5 +26,6 @@ urlpatterns = [
     path("api/", include("booking.api.urls")),
 ]
 
-# Serve media files (images) in both development and production
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Only serve media files locally if not using Azure Blob Storage
+if settings.DEBUG and not settings.DEFAULT_FILE_STORAGE == 'custom_storage.AzureMediaStorage':
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
