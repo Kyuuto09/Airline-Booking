@@ -51,9 +51,9 @@ const Navbar = () => {
           {/* Navigation Links */}
           <div className="flex items-center gap-2">
             <Link
-              to="/"
+              to="/flights"
               className={`px-4 py-2 rounded-lg text-[14px] font-medium transition-all ${
-                isActive('/')
+                isActive('/flights')
                   ? 'bg-[#e8f0fe] text-[#1a73e8]'
                   : 'text-[#5f6368] hover:bg-[#f8f9fa] hover:text-[#202124]'
               }`}

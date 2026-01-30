@@ -94,13 +94,13 @@ const RecentlyViewed = () => {
                 <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                   Flight
                 </th>
-                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                <th className="text-center px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                   Route
                 </th>
-                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                <th className="text-center px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                   Aircraft
                 </th>
-                <th className="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
+                <th className="text-center px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                   Schedule
                 </th>
                 <th className="text-right px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
@@ -121,14 +121,14 @@ const RecentlyViewed = () => {
                         <img 
                           src={flight.airline_logo} 
                           alt={flight.airline_name || 'Airline'}
-                          className="w-10 h-10 object-contain rounded-lg bg-white border border-gray-100 p-1"
+                          className="h-8 w-8 object-contain"
                           onError={(e) => {
                             e.target.style.display = 'none';
                           }}
                         />
                       ) : (
-                        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-50">
-                          <svg className="w-5 h-5 text-[#1a73e8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50">
+                          <svg className="w-4 h-4 text-[#1a73e8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                           </svg>
                         </div>
@@ -176,15 +176,15 @@ const RecentlyViewed = () => {
                   </td>
 
                   {/* Aircraft */}
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-center">
                     <div className="text-[13px] font-medium text-[#202124] bg-blue-50 text-blue-700 px-2 py-1 rounded inline-block">
                       {flight.airplane_name}
                     </div>
                   </td>
 
                   {/* Schedule */}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col gap-1">
+                  <td className="px-6 py-4 text-center">
+                    <div className="flex flex-col gap-1 items-center">
                       <div className="text-[15px] font-semibold text-[#202124]">
                         {new Date(flight.departure_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
                         <span className="mx-2 text-gray-300">→</span>

@@ -160,8 +160,15 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # ---- Azure Blob Storage Configuration ----
 # Check if Azure credentials are provided
 if os.getenv("AZURE_ACCOUNT_NAME") and os.getenv("AZURE_ACCOUNT_KEY"):
-    # Use Azure Blob Storage for media files
-    DEFAULT_FILE_STORAGE = "custom_storage.AzureMediaStorage"
+    # Use Azure Blob Storage for media files (Django 6.0+ way)
+    STORAGES = {
+        "default": {
+            "BACKEND": "custom_storage.AzureMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
     AZURE_ACCOUNT_NAME = os.getenv("AZURE_ACCOUNT_NAME")
     AZURE_ACCOUNT_KEY = os.getenv("AZURE_ACCOUNT_KEY")
@@ -188,3 +195,37 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
+
+# ========================================
+# 🔍 AZURE STORAGE DEBUG
+# ========================================
+print("=" * 60)
+print("🔍 AZURE STORAGE DEBUG INFO:")
+print(f"AZURE_ACCOUNT_NAME: {os.getenv('AZURE_ACCOUNT_NAME')}")
+print(f"AZURE_ACCOUNT_KEY exists: {bool(os.getenv('AZURE_ACCOUNT_KEY'))}")
+print(f"DEFAULT_FILE_STORAGE: {globals().get('DEFAULT_FILE_STORAGE', 'Not set')}")
+
+# Test Azure connection
+try:
+    from azure.storage.blob import BlobServiceClient
+
+    account_name = os.getenv("AZURE_ACCOUNT_NAME")
+    account_key = os.getenv("AZURE_ACCOUNT_KEY")
+
+    if account_name and account_key:
+        blob_service = BlobServiceClient(
+            account_url=f"https://{account_name}.blob.core.windows.net",
+            credential=account_key,
+        )
+        # Try to list containers
+        containers = list(blob_service.list_containers())
+        print(f"✅ Azure Connected! Found {len(containers)} container(s):")
+        for container in containers:
+            print(f"  📦 {container.name}")
+    else:
+        print("❌ Azure credentials missing in environment!")
+
+except Exception as e:
+    print(f"❌ Azure connection error: {type(e).__name__}: {e}")
+
+print("=" * 60)

@@ -102,6 +102,15 @@
                 <a href="{% url 'admin_airline_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
                     Airlines
                 </a>
+                <a href="{% url 'admin_airport_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
+                    Airports
+                </a>
+                <a href="{% url 'admin_reservation_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
+                    Reservations
+                </a>
+                <a href="{% url 'admin_seat_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">
+                    Seats
+                </a>
             </div>
         </div>
     </nav>
@@ -123,19 +132,54 @@
             </a>
         </div>
 
+        <!-- Search and Filter Bar -->
+        <div class="mb-6 bg-white p-4 rounded-xl border border-[#e8eaed] shadow-sm">
+            <form method="GET" class="flex gap-4">
+                <div class="flex-1 relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <input type="text" name="q" value="{{ search_query|default:'' }}" 
+                        class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 sm:text-sm" 
+                        placeholder="Search flights by number, airline, or city...">
+                </div>
+                <!-- Preserve sort parameter when searching -->
+                {% if current_sort %}<input type="hidden" name="sort" value="{{ current_sort }}">{% endif %}
+                <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Search
+                </button>
+                {% if search_query %}
+                    <a href="{% url 'admin_flight_list' %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-red-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Clear
+                    </a>
+                {% endif %}
+            </form>
+        </div>
+
         <!-- Flights Table -->
         <div class="bg-white rounded-2xl border border-[#e8eaed] shadow-sm overflow-hidden">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr class="border-b border-[#e8eaed]">
-                        <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Flight Number
+                        <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide group cursor-pointer hover:bg-gray-100 transition-colors">
+                            <a href="?sort={% if current_sort == 'flight_number' %}-flight_number{% else %}flight_number{% endif %}&q={{ search_query }}" class="flex items-center gap-1">
+                                Flight Number
+                                {% if current_sort == 'flight_number' %}↓{% elif current_sort == '-flight_number' %}↑{% endif %}
+                            </a>
                         </th>
                         <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Departure
+                             <a href="?sort={% if current_sort == 'airline__name' %}-airline__name{% else %}airline__name{% endif %}&q={{ search_query }}" class="flex items-center gap-1 hover:text-[#202124]">
+                                Airline
+                                {% if current_sort == 'airline__name' %}↓{% elif current_sort == '-airline__name' %}↑{% endif %}
+                             </a>
                         </th>
                         <th class="text-left px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
-                            Arrival
+                            <a href="?sort={% if current_sort == 'origin__city' %}-origin__city{% else %}origin__city{% endif %}&q={{ search_query }}" class="flex items-center gap-1 hover:text-[#202124]">
+                                Route (Origin → Dest)
+                                {% if current_sort == 'origin__city' %}↓{% elif current_sort == '-origin__city' %}↑{% endif %}
+                            </a>
                         </th>
                         <th class="text-right px-6 py-4 text-[11px] font-medium text-[#5f6368] uppercase tracking-wide">
                             Action
@@ -149,10 +193,19 @@
                                 {{ flight.flight_number }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-[#5f6368]">
-                                {{ flight.departure_time }}
+                                <div class="flex items-center gap-2">
+                                    {% if flight.airline.logo %}
+                                        <img src="{{ flight.airline.logo.url }}" alt="" class="h-6 w-6 object-contain">
+                                    {% endif %}
+                                    {{ flight.airline.name }}
+                                </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-[#5f6368]">
-                                {{ flight.arrival_time }}
+                            <td class="px-6 py-4 text-sm text-[#5f6368]">
+                                <div class="flex flex-col">
+                                    <span class="font-medium text-[#202124]">{{ flight.origin.code }} → {{ flight.destination.code }}</span>
+                                    <span class="text-xs">{{ flight.origin.city }} to {{ flight.destination.city }}</span>
+                                    <span class="text-xs mt-1 text-gray-400">{{ flight.departure_time|date:"M d, H:i" }} - {{ flight.arrival_time|date:"M d, H:i" }}</span>
+                                </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <a href="{% url 'admin_flight_update' flight.id %}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
@@ -173,6 +226,60 @@
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            {% if flights.has_other_pages %}
+            <div class="px-6 py-4 flex items-center justify-between border-t border-[#e8eaed] bg-gray-50">
+                <div class="flex-1 flex justify-between sm:hidden">
+                    {% if flights.has_previous %}
+                        <a href="?page={{ flights.previous_page_number }}&q={{ search_query }}&sort={{ current_sort }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Previous</a>
+                    {% endif %}
+                    {% if flights.has_next %}
+                        <a href="?page={{ flights.next_page_number }}&q={{ search_query }}&sort={{ current_sort }}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Next</a>
+                    {% endif %}
+                </div>
+                <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                        <p class="text-sm text-gray-700">
+                            Showing <span class="font-medium">{{ flights.start_index }}</span> to <span class="font-medium">{{ flights.end_index }}</span> of <span class="font-medium">{{ flights.paginator.count }}</span> results
+                        </p>
+                    </div>
+                    <div>
+                        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                            {% if flights.has_previous %}
+                                <a href="?page={{ flights.previous_page_number }}&q={{ search_query }}&sort={{ current_sort }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            {% endif %}
+                            
+                            {% for i in flights.paginator.page_range %}
+                                {% if flights.number == i %}
+                                    <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-blue-50 text-sm font-medium text-blue-600">
+                                        {{ i }}
+                                    </span>
+                                {% else %}
+                                    <a href="?page={{ i }}&q={{ search_query }}&sort={{ current_sort }}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium">
+                                        {{ i }}
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if flights.has_next %}
+                                <a href="?page={{ flights.next_page_number }}&q={{ search_query }}&sort={{ current_sort }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            {% endif %}
+                        </nav>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
     

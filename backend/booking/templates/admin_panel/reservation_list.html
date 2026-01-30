@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin – Reservations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-white min-h-screen">
+    {% include 'admin_panel/parts/toast.html' %} <!-- Assuming I could make a part file, but sticking to inline for now to avoid multiple file creations if not needed -->
+    <!-- Navigation -->
+    <nav class="bg-white border-b border-[#e8eaed]">
+        <div class="max-w-[1400px] mx-auto px-6">
+            <div class="flex h-16 space-x-8">
+                <a href="{% url 'admin_flight_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">Flights</a>
+                <a href="{% url 'admin_airline_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">Airlines</a>
+                <a href="{% url 'admin_airport_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">Airports</a>
+                <a href="{% url 'admin_reservation_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-blue-500 text-sm font-medium text-[#202124]">Reservations</a>
+                <a href="{% url 'admin_seat_list' %}" class="inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-[#5f6368] hover:text-[#202124] hover:border-[#e8eaed]">Seats</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="px-6 py-8 max-w-[1400px] mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <div><h1 class="text-3xl font-semibold text-[#202124] mb-2">Reservations</h1><p class="text-[#5f6368] text-sm">Manage bookings</p></div>
+            <a href="{% url 'admin_reservation_create' %}" class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700">Create Reservation</a>
+        </div>
+
+        <div class="mb-6 bg-white p-4 rounded-xl border border-[#e8eaed] shadow-sm">
+            <form method="GET" class="flex gap-4">
+                <input type="text" name="q" value="{{ search_query|default:'' }}" class="block w-full px-3 py-2 border border-gray-300 rounded-md sm:text-sm" placeholder="Search user, flight...">
+                <button type="submit" class="px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-sm font-medium">Search</button>
+                {% if search_query %}<a href="{% url 'admin_reservation_list' %}" class="px-4 py-2 border border-gray-300 rounded-md text-red-700 font-medium">Clear</a>{% endif %}
+            </form>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-[#e8eaed] shadow-sm overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr class="border-b">
+                        <th class="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase">User</th>
+                        <th class="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase">Flight</th>
+                        <th class="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase">Seat</th>
+                        <th class="text-left px-6 py-4 text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="text-right px-6 py-4 text-xs font-medium text-gray-500 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in reservations %}
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-6 py-4 text-sm font-medium">{{ r.id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ r.user.username }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ r.flight.flight_number }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-600">{{ r.seat }}</td>
+                            <td class="px-6 py-4 text-sm">
+                                <span class="px-2 py-1 rounded-full text-xs font-medium {% if r.status == 'CONFIRMED' %}bg-green-100 text-green-800{% elif r.status == 'LOCKED' %}bg-yellow-100 text-yellow-800{% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ r.status }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right text-sm font-medium">
+                                <a href="{% url 'admin_reservation_update' r.id %}" class="text-blue-600 hover:text-blue-900 mr-4">Edit</a>
+                                <a href="{% url 'admin_reservation_delete' r.id %}" onclick="return confirm('Delete?')" class="text-red-600 hover:text-red-900">Delete</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="6" class="px-6 py-12 text-center text-gray-500">No reservations found</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% if reservations.has_other_pages %}
+                 <div class="px-6 py-4 border-t flex justify-end gap-2">
+                    {% if reservations.has_previous %}<a href="?page={{ reservations.previous_page_number }}" class="text-blue-600">Previous</a>{% endif %}
+                    <span class="text-gray-500">{{ reservations.number }} / {{ reservations.paginator.num_pages }}</span>
+                    {% if reservations.has_next %}<a href="?page={{ reservations.next_page_number }}" class="text-blue-600">Next</a>{% endif %}
+                 </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
