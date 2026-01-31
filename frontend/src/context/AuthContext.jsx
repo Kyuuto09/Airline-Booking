@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -6,6 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     const loginUser = async (username, password) => {
         const response = await fetch(`${import.meta.env.VITE_API_URL}/token/`, {
@@ -54,6 +56,7 @@ export const AuthProvider = ({ children }) => {
         setAuthTokens(null);
         setUser(null);
         localStorage.removeItem('authTokens');
+        navigate('/');
     };
 
     const contextData = {

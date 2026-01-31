@@ -9,6 +9,7 @@ from .views import (
     AirportViewSet,
     FlightViewSet,
     RegisterView,
+    ReservationViewSet,
     recently_viewed,
     remove_from_recent,
 )
@@ -18,6 +19,7 @@ router.register(r"airports", AirportViewSet, basename="airport")
 router.register(r"airplanes", AirplaneViewSet, basename="airplane")
 router.register(r"airlines", AirlineViewSet, basename="airline")
 router.register(r"flights", FlightViewSet, basename="flight")
+router.register(r"reservations", ReservationViewSet, basename="reservation")
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="auth_register"),

@@ -4,7 +4,9 @@ import Navbar from './components/Navbar/Navbar'
 import Home from './components/Home/Home'
 import FlightList from './components/FlightList/FlightList'
 import FlightDetail from './components/FlightDetail/FlightDetail'
+import SeatSelection from './components/SeatSelection/SeatSelection'
 import RecentlyViewed from './components/RecentlyViewed/RecentlyViewed'
+import MyBookings from './components/MyBookings/MyBookings'
 import Login from './components/Auth/Login'
 import Register from './components/Auth/Register'
 import { AuthProvider } from './context/AuthContext'
@@ -31,6 +33,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/flights" element={<FlightList />} />
             <Route path="/flight/:id" element={<FlightDetail />} />
+            <Route path="/booking/:id" element={<SeatSelection />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
             <Route path="/recently-viewed" element={<RecentlyViewed />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

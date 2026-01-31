@@ -47,7 +47,7 @@ const FlightDetail = () => {
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
           <div className="text-red-600 font-medium mb-2">Unable to load flight</div>
           <div className="text-red-500 text-sm mb-4">{error}</div>
-          <Link to="/" className="inline-flex items-center text-[#1a73e8] hover:underline text-sm">
+          <Link to="/flights" className="inline-flex items-center text-[#1a73e8] hover:underline text-sm">
             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -63,7 +63,7 @@ const FlightDetail = () => {
       <div className="max-w-5xl mx-auto px-6 py-12">
         <div className="text-center py-20">
           <div className="text-[#5f6368] mb-4">Flight not found</div>
-          <Link to="/" className="text-[#1a73e8] hover:underline text-sm">
+          <Link to="/flights" className="text-[#1a73e8] hover:underline text-sm">
             ← Back to flights
           </Link>
         </div>
@@ -75,7 +75,7 @@ const FlightDetail = () => {
     <div className="px-6 py-8 max-w-[1200px] mx-auto">
       {/* Back button */}
       <Link 
-        to="/" 
+        to="/flights" 
         className="inline-flex items-center text-[#5f6368] hover:text-[#202124] text-[13px] mb-6 transition-colors"
       >
         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -242,9 +242,12 @@ const FlightDetail = () => {
               </div>
               
               <div className="space-y-4">
-                <button className="w-full px-6 py-3 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors text-[14px] font-semibold shadow-sm">
-                  Continue to Booking
-                </button>
+                <Link 
+                  to={`/booking/${flight.id}`}
+                  className="w-full block text-center px-6 py-3 bg-[#1a73e8] text-white rounded-lg hover:bg-[#1765cc] transition-colors text-[14px] font-semibold shadow-sm"
+                >
+                  Continue to Seat Selection
+                </Link>
                 
                 <div className="pt-4 border-t border-[#e8eaed]">
                   <div className="text-[11px] text-[#5f6368] uppercase tracking-wider font-semibold mb-3">

@@ -97,3 +97,22 @@ class SeatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seat
         fields = "__all__"
+
+
+class ReservationSerializer(serializers.ModelSerializer):
+    flight_details = FlightSerializer(source="flight", read_only=True)
+    seat_details = SeatSerializer(source="seat", read_only=True)
+
+    class Meta:
+        model = Reservation
+        fields = [
+            "id",
+            "user",
+            "flight",
+            "seat",
+            "status",
+            "expires_at",
+            "flight_details",
+            "seat_details",
+        ]
+        read_only_fields = ["user", "expires_at"]
